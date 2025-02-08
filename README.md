@@ -4,7 +4,7 @@ This project is the beginning of a new type of artificial intelligence—one tha
 
 The current phase starts small, with the simplest form of neural processing: the reflex arc. This is the foundation of all higher intelligence, as even complex thought processes are built upon basic neural circuits like these.
 
-[![][image-banner]][https://res.cloudinary.com/diekemzs9/image/upload/v1739055438/Neuron_ltkwqy.png]
+<img src="https://res.cloudinary.com/diekemzs9/image/upload/v1739055438/Neuron_ltkwqy.png" alt="Neuron" width="800"/>
 
 At its core, our system consists of:
 - **Biologically accurate neurons** that have real-time signal processing, thresholds, decay rates, and refractory periods.
