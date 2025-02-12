@@ -1,10 +1,9 @@
-
 """
 A simple simulation of a human-inspired reflex arc using an integrate-and-fire neuron model.
 
 This simulation creates three neurons:
   1. Sensor Neuron: Receives input (danger signal).
-  2. Interneuron: Processes the sensor’s signal.
+  2. Interneuron: Processes the sensor's signal.
   3. Motor Neuron: Triggers an escape response when activated.
 
 Each neuron integrates input over discrete time steps, applies a decay to mimic the loss of potential,
@@ -39,7 +38,7 @@ class Neuron:
 
     def update(self):
         """
-        Update the neuron’s state for one time step.
+        Update the neuron's state for one time step.
 
         Applies decay to the membrane potential, checks for firing, and manages the refractory timer.
 
@@ -62,43 +61,60 @@ class Neuron:
 
 
 class ReflexArc:
+    """Simulates a biological reflex arc connecting three neurons in sequence.
+    
+    Attributes:
+        sensor: Neuron receiving external danger signals
+        interneuron: Neuron processing sensor inputs
+        motor: Neuron triggering escape responses
     """
-    Represents a basic reflex arc with a sensor neuron, an interneuron, and a motor neuron.
-    """
-
-    def __init__(self):
-        # Initialize neurons with parameters chosen to mimic a fast reflex
-        self.sensor = Neuron(threshold=1.0, decay=0.9, refractory_period=1)
-        self.interneuron = Neuron(threshold=1.0, decay=0.95, refractory_period=1)
-        self.motor = Neuron(threshold=1.0, decay=0.95, refractory_period=1)
+    def __init__(self, 
+                 sensor_thresh=1.0, 
+                 interneuron_thresh=1.0,
+                 motor_thresh=1.0,
+                 signal_strength=1.0):
+        """
+        Args:
+            sensor_thresh: Firing threshold for sensor neuron
+            interneuron_thresh: Firing threshold for interneuron
+            motor_thresh: Firing threshold for motor neuron
+            signal_strength: Strength of signals between neurons
+        """
+        self.signal_strength = signal_strength
+        self.sensor = Neuron(threshold=sensor_thresh, decay=0.9)
+        self.interneuron = Neuron(threshold=interneuron_thresh, decay=0.95)
+        self.motor = Neuron(threshold=motor_thresh, decay=0.95)
 
     def step(self, danger_signal):
+        """Process one time step of the reflex arc.
+        
+        Args:
+            danger_signal: Input value (0.0-1.0) representing danger intensity
+            
+        Returns:
+            Dict containing firing states of all three neurons
         """
-        Process one simulation time step.
-
-        :param danger_signal: A float representing danger intensity (e.g., 0.0 for safe, 1.0 for danger).
-        :return: Dictionary with the firing state of each neuron.
-        """
-        # Sensor neuron receives the danger input
+        # Clear sensor input from previous step
+        self.sensor.membrane_potential *= self.sensor.decay
+        
+        # Process danger signal through neural chain
         self.sensor.receive_input(danger_signal)
         sensor_fired = self.sensor.update()
-
-        # If sensor fires, pass a signal to the interneuron
+        
+        # Propagate signal through interneuron if sensor fired
         if sensor_fired:
-            self.interneuron.receive_input(1.0)  # Fixed signal strength for simplicity
-
+            self.interneuron.receive_input(self.signal_strength)
         interneuron_fired = self.interneuron.update()
-
-        # If interneuron fires, pass the signal to the motor neuron
+        
+        # Trigger motor neuron if interneuron fired
         if interneuron_fired:
-            self.motor.receive_input(1.0)
-
+            self.motor.receive_input(self.signal_strength)
         motor_fired = self.motor.update()
 
         return {
             'sensor': sensor_fired,
             'interneuron': interneuron_fired,
-            'motor': motor_fired,
+            'motor': motor_fired
         }
 
 
