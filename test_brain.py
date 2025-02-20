@@ -20,6 +20,8 @@ class TestNeuron(unittest.TestCase):
         # Immediately after firing, neuron is in refractory period
         neuron.receive_input(1.0)
         self.assertFalse(neuron.update(), "Neuron in refractory period should not fire")
+        # Wait for the refractory period to expire by calling update (this decrements the timer)
+        neuron.update()  # This update call decreases the refractory timer from 1 to 0
         # After refractory period, provide sufficient input to fire again
         neuron.receive_input(1.0)
         self.assertTrue(neuron.update(), "Neuron should fire after refractory period expires")
